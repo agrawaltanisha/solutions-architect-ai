@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Solutions Architect AI</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Segoe UI',sans-serif;background:#0f0f1a;color:#e2e8f0;min-height:100vh}
+    .hero{background:linear-gradient(135deg,#1e1b4b,#0f172a);padding:48px 24px;text-align:center;border-bottom:1px solid #2d2d44}
+    .hero h1{font-size:2.5rem;font-weight:800;background:linear-gradient(90deg,#a78bfa,#38bdf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .hero p{color:#94a3b8;margin-top:8px;font-size:1.1rem}
+    .container{max-width:1100px;margin:0 auto;padding:32px 24px}
+    .search-box{display:flex;gap:12px;margin-bottom:16px}
+    .search-box input{flex:1;background:#1e293b;border:2px solid #334155;border-radius:12px;padding:16px 20px;color:#e2e8f0;font-size:1rem;outline:none;transition:border .2s}
+    .search-box input:focus{border-color:#7c3aed}
+    .search-box input::placeholder{color:#475569}
+    .search-box button{background:linear-gradient(135deg,#7c3aed,#2563eb);border:none;border-radius:12px;padding:16px 28px;color:white;font-size:1rem;font-weight:600;cursor:pointer;transition:opacity .2s;white-space:nowrap}
+    .search-box button:hover{opacity:.9}
+    .search-box button:disabled{opacity:.5;cursor:not-allowed}
+    .examples{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:32px}
+    .chip{background:#1e293b;border:1px solid #334155;border-radius:20px;padding:6px 14px;font-size:.85rem;color:#94a3b8;cursor:pointer;transition:all .2s}
+    .chip:hover{border-color:#7c3aed;color:#a78bfa}
+    .status{text-align:center;padding:20px;color:#94a3b8;display:none}
+    .spinner{display:inline-block;width:32px;height:32px;border:3px solid #334155;border-top-color:#7c3aed;border-radius:50%;animation:spin 1s linear infinite;margin-bottom:12px}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .results{display:none}
+    .card{background:#1e293b;border:1px solid #334155;border-radius:16px;padding:24px;margin-bottom:20px}
+    .card h2{font-size:1.1rem;font-weight:700;color:#a78bfa;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+    .card p{color:#cbd5e1;line-height:1.7}
+    .diagram-card{background:#0f172a;border:1px solid #7c3aed;border-radius:16px;padding:24px;margin-bottom:20px}
+    .diagram-card h2{font-size:1.1rem;font-weight:700;color:#a78bfa;margin-bottom:16px}
+    #diagram-container{background:#1e293b;border-radius:12px;padding:24px;min-height:200px;overflow:auto}
+    #diagram-container svg{max-width:100%;height:auto}
+    .tabs{display:flex;gap:4px;margin-bottom:16px}
+    .tab{background:#0f172a;border:1px solid #334155;border-radius:8px;padding:8px 16px;color:#64748b;cursor:pointer;font-size:.9rem;transition:all .2s}
+    .tab.active{background:#7c3aed;border-color:#7c3aed;color:white}
+    #mermaid-code{display:none;background:#0f172a;border-radius:8px;padding:16px;font-family:monospace;font-size:.85rem;color:#a78bfa;white-space:pre-wrap;word-break:break-all;max-height:300px;overflow-y:auto}
+    .req-list{list-style:none;display:flex;flex-direction:column;gap:6px}
+    .req-list li{background:#0f172a;border-left:3px solid #7c3aed;border-radius:0 8px 8px 0;padding:8px 12px;color:#cbd5e1;font-size:.9rem}
+    .req-list li.nfr{border-left-color:#38bdf8}
+    .risk-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+    .risk-item{background:#0f172a;border-radius:8px;padding:10px 14px;font-size:.9rem;color:#cbd5e1}
+    .risk-item.spof{border-left:3px solid #ef4444}
+    .risk-item.perf{border-left:3px solid #f59e0b}
+    .risk-item.sec{border-left:3px solid #10b981}
+    .risk-item.other{border-left:3px solid #6366f1}
+    .badge{display:inline-block;padding:4px 10px;border-radius:20px;font-size:.8rem;font-weight:600;margin-top:12px}
+    .badge.approved{background:#14532d;color:#4ade80}
+    .badge.revision{background:#450a0a;color:#f87171}
+    .signoff{color:#94a3b8;font-size:.9rem;margin-top:8px;font-style:italic}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+    @media(max-width:700px){.grid2{grid-template-columns:1fr}}
+    .meta{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+    .meta-item{background:#1e293b;border-radius:8px;padding:10px 16px;font-size:.85rem;color:#94a3b8}
+    .meta-item span{color:#e2e8f0;font-weight:600}
+    .open-btn{display:inline-block;margin-top:12px;background:linear-gradient(135deg,#7c3aed,#2563eb);color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:.9rem;font-weight:600}
+  </style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>🏗️ Solutions Architect AI</h1>
+  <p>Describe any system — get a full architecture design with diagram in seconds</p>
+</div>
+
+<div class="container">
+  <div class="search-box">
+    <input type="text" id="prompt-input" placeholder="e.g. Design Amazon's e-commerce platform..." />
+    <button id="design-btn" onclick="runDesign()">Design It ✨</button>
+  </div>
+
+  <div class="examples">
+    <span class="chip" onclick="setPrompt(this)">Amazon e-commerce</span>
+    <span class="chip" onclick="setPrompt(this)">Netflix streaming</span>
+    <span class="chip" onclick="setPrompt(this)">Uber ride hailing</span>
+    <span class="chip" onclick="setPrompt(this)">WhatsApp messaging</span>
+    <span class="chip" onclick="setPrompt(this)">Twitter social media</span>
+    <span class="chip" onclick="setPrompt(this)">Spotify music streaming</span>
+    <span class="chip" onclick="setPrompt(this)">Google Search</span>
+    <span class="chip" onclick="setPrompt(this)">Food delivery app</span>
+    <span class="chip" onclick="setPrompt(this)">PayPal payment system</span>
+    <span class="chip" onclick="setPrompt(this)">Instagram photo sharing</span>
+  </div>
+
+  <div class="status" id="status">
+    <div class="spinner"></div>
+    <div id="status-text">Running Agent 1: Requirement Analyst...</div>
+  </div>
+
+  <div class="results" id="results"></div>
+</div>
+
+<script>
+  mermaid.initialize({ startOnLoad: false, theme: "dark",
+    themeVariables: { primaryColor:"#7c3aed", primaryTextColor:"#cdd6f4",
+      primaryBorderColor:"#a78bfa", lineColor:"#94a3b8",
+      secondaryColor:"#1e293b", tertiaryColor:"#0f172a" }
+  });
+
+  function setPrompt(el) {
+    document.getElementById("prompt-input").value = "Design " + el.textContent + " system";
+  }
+
+  document.getElementById("prompt-input").addEventListener("keydown", e => {
+    if (e.key === "Enter") runDesign();
+  });
+
+  const statusMessages = [
+    "🔍 Agent 1: Analysing requirements...",
+    "📐 Agent 2: Designing architecture...",
+    "🔧 MCP Server: Generating Mermaid diagram...",
+    "🔎 Agent 3: Critic reviewing for SPOFs...",
+    "✨ Finalising your design document...",
+  ];
+
+  async function runDesign() {
+    const prompt = document.getElementById("prompt-input").value.trim();
+    if (!prompt) { alert("Please enter a system design prompt!"); return; }
+
+    document.getElementById("design-btn").disabled = true;
+    document.getElementById("results").style.display = "none";
+    const statusEl = document.getElementById("status");
+    const statusText = document.getElementById("status-text");
+    statusEl.style.display = "block";
+
+    let msgIdx = 0;
+    statusText.textContent = statusMessages[0];
+    const interval = setInterval(() => {
+      msgIdx = (msgIdx + 1) % statusMessages.length;
+      statusText.textContent = statusMessages[msgIdx];
+    }, 4000);
+
+    try {
+      const resp = await fetch("/design", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt }),
+      });
+      const data = await resp.json();
+      clearInterval(interval);
+      statusEl.style.display = "none";
+
+      if (data.error) {
+        alert("Error: " + data.error); return;
+      }
+      renderResults(data, prompt);
+    } catch(err) {
+      clearInterval(interval);
+      statusEl.style.display = "none";
+      alert("Network error: " + err.message);
+    } finally {
+      document.getElementById("design-btn").disabled = false;
+    }
+  }
+
+  function getRiskClass(risk) {
+    if (risk.includes("[SPOF]")) return "spof";
+    if (risk.includes("[PERF]")) return "perf";
+    if (risk.includes("[SEC]"))  return "sec";
+    return "other";
+  }
+
+  async function renderResults(data, prompt) {
+    const signoffApproved = (data.critic_final_signoff || "").startsWith("APPROVED");
+    const signoffBadge    = signoffApproved
+      ? '<span class="badge approved">✅ APPROVED</span>'
+      : '<span class="badge revision">⚠️ REVISION REQUIRED</span>';
+
+    const frItems  = (data.functional_requirements  || []).map(r => `<li>${r}</li>`).join("");
+    const nfrItems = (data.non_functional_requirements || []).map(r => `<li class="nfr">${r}</li>`).join("");
+    const riskItems= (data.risks_identified || []).map(r =>
+      `<li class="risk-item ${getRiskClass(r)}">${r}</li>`).join("");
+
+    const mermaidCode = data.mermaid_diagram || "";
+
+    document.getElementById("results").innerHTML = `
+      <div class="meta">
+        <div class="meta-item">📝 Prompt: <span>${prompt}</span></div>
+        <div class="meta-item">🔄 Revisions: <span>${data.revision_count}</span></div>
+        <div class="meta-item">⚠️ SPOF Remaining: <span>${data.spof_detected ? "Yes" : "No"}</span></div>
+      </div>
+
+      <!-- Summary -->
+      <div class="card">
+        <h2>📋 Executive Summary</h2>
+        <p>${data.executive_summary || "N/A"}</p>
+      </div>
+
+      <!-- Diagram -->
+      <div class="diagram-card">
+        <h2>🗺️ Architecture Diagram</h2>
+        <div class="tabs">
+          <div class="tab active" onclick="showTab('visual')">Visual</div>
+          <div class="tab" onclick="showTab('code')">Mermaid Code</div>
+        </div>
+        <div id="diagram-container">
+          <div class="mermaid" id="mermaid-render">${mermaidCode}</div>
+        </div>
+        <pre id="mermaid-code">${mermaidCode}</pre>
+        <a class="open-btn" href="${getMermaidLiveUrl(mermaidCode)}" target="_blank">
+          🔗 Open in Mermaid.live
+        </a>
+      </div>
+
+      <!-- Requirements -->
+      <div class="grid2">
+        <div class="card">
+          <h2>⚡ Functional Requirements</h2>
+          <ul class="req-list">${frItems}</ul>
+        </div>
+        <div class="card">
+          <h2>📊 Non-Functional Requirements</h2>
+          <ul class="req-list">${nfrItems}</ul>
+        </div>
+      </div>
+
+      <!-- Risks -->
+      <div class="card">
+        <h2>🛡️ Risk Assessment</h2>
+        <ul class="risk-list">${riskItems}</ul>
+        ${signoffBadge}
+        <p class="signoff">${data.critic_final_signoff || ""}</p>
+      </div>
+    `;
+
+    document.getElementById("results").style.display = "block";
+
+    // Render mermaid
+    try {
+      const el = document.getElementById("mermaid-render");
+      el.removeAttribute("data-processed");
+      await mermaid.run({ nodes: [el] });
+    } catch(e) {
+      document.getElementById("diagram-container").innerHTML =
+        `<p style="color:#f87171">⚠️ Diagram render failed — use the Mermaid.live link above.</p>`;
+    }
+  }
+
+  function showTab(tab) {
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+    if (tab === "visual") {
+      event.target.classList.add("active");
+      document.getElementById("diagram-container").style.display = "block";
+      document.getElementById("mermaid-code").style.display = "none";
+    } else {
+      event.target.classList.add("active");
+      document.getElementById("diagram-container").style.display = "none";
+      document.getElementById("mermaid-code").style.display = "block";
+    }
+  }
+
+  function getMermaidLiveUrl(code) {
+    const state = JSON.stringify({ code, mermaid: { theme: "dark" }, autoSync: true });
+    const b64   = btoa(unescape(encodeURIComponent(state)));
+    return `https://mermaid.live/edit#base64:${b64}`;
+  }
+</script>
+</body>
+</html>
